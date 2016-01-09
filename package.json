@@ -1,0 +1,24 @@
+{
+  "name": "gulp-ng-fixtures",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/index.js"
+  },
+  "author": "Ryan Johnson <ryan@shakainteractive.com> (http://shakainteractive.com/)",
+  "license": "MIT",
+  "dependencies": {
+    "gulp-util": "^3.0.7",
+    "handlebars": "^4.0.5",
+    "rx": "^4.0.7",
+    "through2": "^2.0.0"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "escape-string-regexp": "^1.0.4",
+    "gulp": "^3.9.0",
+    "mocha": "^2.3.4",
+    "stream-assert": "^2.0.3"
+  }
+}

@@ -1,0 +1,42 @@
+<!-- ng:fixtures -->
+<script src="{{angularmocks}}"></script>
+<script>
+angular
+  .module('fixtures.service', ['ngMockE2E'])
+  .factory('fixtures', fixtures)
+  .run(init);
+
+angular
+  .module('fixtures.app', ['{{appmodule}}', 'fixtures.service']);
+
+  angular.element(document).ready(function() {
+    angular.bootstrap(document, ['fixtures.app']);
+  });
+
+  function fixtures($httpBackend) {
+    var service = {
+      init: _init
+    };
+
+    return service;
+
+    ////////////
+
+    function _init() {
+      {{#each fixtures}}
+
+        {{#if res}}
+          $httpBackend.when({{{parseReq req}}}, "{{method}}").respond({{status}}, {{{json res}}});
+        {{else}}
+          $httpBackend.whenGET({{{parseReq req}}}).passThrough();
+        {{/if}}
+
+      {{/each}}
+    }
+  }
+
+  function init(fixtures) {
+    fixtures.init();
+  }
+</script>
+<!-- endfixtures -->
