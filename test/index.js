@@ -41,10 +41,12 @@ describe('gulp-ng-fixtures', function() {
       res: 200
     },
     {
+      req: '/api/tester'
+    },
+    {
       req: 'test/json/response',
       res: 'test/fixtures/dummy.json'
-    },
-    {req: '/api/tester'}
+    }
   ];
 
   beforeEach(function() {
@@ -99,12 +101,10 @@ describe('gulp-ng-fixtures', function() {
     .pipe(assert.end(done));
   });
 
-  it.only('should add $httpBackend call for each fixture item', function(done) {
+  it('should add $httpBackend call for each fixture item', function(done) {
     var pattern = getFixtureRegex(mockFixtures);
 
     options.fixtures = mockFixtures;
-
-    console.log('pattern', pattern);
 
     gulp.src(paths.inputHtml)
     .pipe(ngFixtures(options))
@@ -129,9 +129,10 @@ function getFixtureRegex(fixtures) {
     item.method = item.method || 'get';
     item.status = item.status || 200;
 
+
     if (item.res) {
       var res = (typeof item.res === 'string' && item.res.indexOf('.json') >= 0) ?
-        JSON.stringify("{\"id\": 1,\"user\": \"testymctest\"}") :
+        formatJson(JSON.stringify(dummyJson)) :
         JSON.stringify(item.res);
 
       result += tmpl1.replace(/\{url\}/, req)
@@ -143,14 +144,19 @@ function getFixtureRegex(fixtures) {
       result += tmpl2.replace(/\{url\}/, req);
     }
 
-    match += escapeRegExp(result) + '(.|\n)*';
+    match += escapeRegExp(result) + '(.|[\\r\\n])*';
   });
+
 
   return match;
 }
 
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+}
+
+function formatJson(str) {
+  return '"' + str.replace(/["]/g, '\\"') + '"';
 }
 
 

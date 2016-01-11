@@ -109,7 +109,7 @@ function removeFixtures(appModule) {
   return through.obj(function(file, encoding, callback) {
     var contents = file.contents.toString();
 
-    contents = contents.replace(/^<!-- ng:fixtures -->(.|\n)*<!-- endfixtures -->$/gmi, '');
+    contents = contents.replace(/^<!-- ng:fixtures -->(.|[\r\n])*<!-- endfixtures -->$/gmi, '');
     contents = contents.replace('data-ng-fixtures="'+ appModule +'"', 'ng-app="'+ appModule +'"');
 
     file.contents = new Buffer(contents);
