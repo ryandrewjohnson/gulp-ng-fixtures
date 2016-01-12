@@ -10,11 +10,8 @@
  *
  * TODO:
  * - add gulp logging and error handling
- * - throw error if isStream
- * - add error handling for if JSON file not found
- * - move to isolated project and rename everything - DONE
+ * - update to use npm version of angular mocks...
  * - add comments
- * - write tests - WIP
  */
 
 'use strict';
@@ -28,6 +25,7 @@ var handlebars  = require('handlebars');
 
 var defaults,
     readFile,
+    PLUGIN_NAME,
     HTTP_METHODS;
 
 defaults = {
@@ -35,6 +33,8 @@ defaults = {
   method: 'get',
   status: 200
 };
+
+PLUGIN_NAME = 'gulp-ng-fixtures';
 
 HTTP_METHODS = [
   'get',
@@ -68,7 +68,8 @@ module.exports = function(opts) {
   var options = merge_options(defaults, opts);
 
   if (typeof opts === 'string') {
-    return removeFixtures(opts);
+    var appModule = opts;
+    return removeFixtures(appModule);
   }
 
   return addFixtures(options);
@@ -80,7 +81,7 @@ function addFixtures(opts) {
       readTplStream;
 
   if (!opts.appModule) {
-    throw new PluginError('gulp-ng-fixtures', 'appModule option is required');
+    throw new PluginError(PLUGIN_NAME, 'appModule option is required');
   }
 
   gutil.log('Add fixtures for app module', gutil.colors.magenta(opts.appModule));
@@ -89,10 +90,21 @@ function addFixtures(opts) {
   readTplStream  = readFile('./template.html');
 
   return through.obj(function(file, encoding, callback) {
+    var self = this;
+
+    console.log('isStream', file.isStream());
+
+    if (file.isStream()) {
+      self.emit('error', new PluginError(PLUGIN_NAME,  'Streaming not supported'));
+      callback();
+      return;
+    }
+
     var stream = fixturesStream
       .concat(readTplStream)
       .concat(removeAppFromIndex(file, opts.appModule))
-      .toArray();
+      .toArray()
+      .catch(onStreamError.bind(self));
 
     stream.subscribe(function(results) {
       var contents = parseIndexFile(results, opts);
@@ -100,6 +112,13 @@ function addFixtures(opts) {
       callback(null, file);
     });
   });
+}
+
+function onStreamError(err) {
+  if (err.code === 'ENOENT') {
+    this.emit('error', new PluginError(PLUGIN_NAME, 'unable to read json file ("'+ err.path +'")!'));
+  }
+  return err;
 }
 
 

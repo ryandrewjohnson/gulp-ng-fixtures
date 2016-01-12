@@ -16,7 +16,8 @@ describe('gulp-ng-fixtures', function() {
       mockFixtures;
 
   paths = {
-    inputHtml: 'test/fixtures/input.html'
+    inputHtml: 'test/fixtures/input.html',
+    outputHtml: 'test/fixtures/output.html'
   };
 
   options = {
@@ -54,7 +55,7 @@ describe('gulp-ng-fixtures', function() {
 
   it('should throw error missing appModule option', function() {
     (function() {
-      ngFixtures();
+      ngFixtures({});
     })
     .should.throw(/appModule option is required/);
   });
@@ -112,6 +113,51 @@ describe('gulp-ng-fixtures', function() {
       d.contents.toString().should.match(new RegExp(pattern, 'gmi'));
     }))
     .pipe(assert.end(done));
+  });
+
+  it('should remove custom attr and replace with original ng-app attribute', function(done) {
+    gulp.src(paths.outputHtml)
+    .pipe(ngFixtures('myapp'))
+    .pipe(assert.first(function(d) {
+      d.contents.toString().should.match(/ng-app="myapp"/);
+      d.contents.toString().should.not.match(/data-ng-fixtures="myapp"/);
+    }))
+    .pipe(assert.end(done));
+  });
+
+  it('should remove fixtures js before <body> tag', function(done) {
+    gulp.src(paths.outputHtml)
+    .pipe(ngFixtures('myapp'))
+    .pipe(assert.first(function(d) {
+      d.contents.toString().should.not.match(/<!-- ng:fixtures -->(.|\n)*<!-- endfixtures -->\n<\/body>/gmi);
+      d.contents.toString().should.not.match(/module\('fixtures\.app', \['myapp', 'fixtures\.service'\]\)/);
+    }))
+    .pipe(assert.end(done));
+  });
+
+  it('should throw error on bad json file', function(done) {
+    options.fixtures = [{
+      req: '/fake/url',
+      res: 'bad.json'
+    }];
+
+    gulp.src(paths.inputHtml)
+    .pipe(ngFixtures(options))
+    .on('error', function(err) {
+      err.message.should.match(/unable to read json file/);
+      done();
+    });
+  });
+
+  it('should emit error on streamed file', function (done) {
+    options.fixtures = mockFixtures;
+
+    gulp.src(paths.inputHtml, { buffer: false })
+      .pipe(ngFixtures(options))
+      .on('error', function (err) {
+        err.message.should.match(/Streaming not supported/);
+        done();
+      });
   });
 
 });

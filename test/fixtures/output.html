@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test File</title>
+</head>
+<body data-ng-fixtures="myapp">
+
+<!-- ng:fixtures -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.2/angular-mocks.js"></script>
+<script>
+angular
+  .module('fixtures.service', ['ngMockE2E'])
+  .factory('fixtures', fixtures)
+  .run(init);
+
+angular
+  .module('fixtures.app', ['valueFocus.app', 'fixtures.service']);
+
+  angular.element(document).ready(function() {
+    angular.bootstrap(document, ['fixtures.app']);
+  });
+
+  function fixtures($httpBackend) {
+    var service = {
+      init: _init
+    };
+
+    return service;
+
+    ////////////
+
+    function _init() {
+
+          $httpBackend.whenGET(/views\/.+/).passThrough();
+
+
+          $httpBackend.when(/\/mulch-en\/tenants\/\d\/value-focus\/user\/fakelogin/, "post").respond(200, "{\n  \"name\": \"value-focus\",\n  \"version\": \"0.0.1\",\n  \"devDependencies\": {\n    \"@reactivex/rxjs\": \"^5.0.0-alpha.10\",\n    \"angular-mocks\": \"1.3.15\",\n    \"browser-sync\": \"^2.7.12\",\n    \"browser-sync-spa\": \"^1.0.2\",\n    \"grunt\": \"^0.4.5\",\n    \"grunt-contrib-less\": \"^0.11.4\",\n    \"grunt-contrib-watch\": \"^0.6.1\",\n    \"gulp\": \"^3.8.11\",\n    \"gulp-canvas\": \"http://githuben.intranet.mckinsey.com/canvas-toolbelt/gulp-canvas/archive/master.tar.gz\",\n    \"gulp-clean\": \"^0.3.1\",\n    \"gulp-concat\": \"^2.5.2\",\n    \"gulp-htmlbuild\": \"^0.4.1\",\n    \"gulp-imagemin\": \"*\",\n    \"gulp-inject\": \"^1.2.0\",\n    \"gulp-jshint\": \"^1.10.0\",\n    \"gulp-karma\": \"0.0.4\",\n    \"gulp-less\": \"^3.0.2\",\n    \"gulp-livereload\": \"^3.8.0\",\n    \"gulp-load-plugins\": \"^1.0.0-rc.1\",\n    \"gulp-minify-css\": \"^1.0.0\",\n    \"gulp-ng-annotate\": \"^0.5.2\",\n    \"gulp-rev\": \"^4.0.0\",\n    \"gulp-rev-replace\": \"^0.4.1\",\n    \"gulp-rimraf\": \"^0.1.1\",\n    \"gulp-strip-comments\": \"^1.0.1\",\n    \"gulp-uglify\": \"^1.1.0\",\n    \"gulp-util\": \"^3.0.7\",\n    \"gulp-watch\": \"^4.2.4\",\n    \"handlebars\": \"^4.0.5\",\n    \"jasmine\": \"^2.3.1\",\n    \"jasmine-core\": \"^2.3.4\",\n    \"jasmine-jquery\": \"*\",\n    \"karma\": \"^0.13.3\",\n    \"karma-coverage\": \"^0.4.2\",\n    \"karma-jasmine\": \"^0.3.6\",\n    \"karma-phantomjs-launcher\": \"^0.2.0\",\n    \"phantomjs\": \"^1.9.17\",\n    \"run-sequence\": \"^1.0.2\",\n    \"rx\": \"^4.0.7\",\n    \"vinyl-map\": \"^1.0.1\"\n  },\n  \"dependencies\": {\n    \"ng-tags-input\": \"^2.3.0\"\n  }\n}\n");
+
+    }
+  }
+
+  function init(fixtures) {
+    fixtures.init();
+  }
+</script>
+<!-- endfixtures -->
+</body>
+</html>
