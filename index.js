@@ -1,32 +1,3 @@
-/**
- * What I need to know from the user:
- * - the index.html file for app
- * - the main app module name
- * - a config with http req and res data
- *
- * What I need to output?
- * - a script tag with angular mocks and the new module
- * - generating angular service and injecting it
- *
- * TODO:
- * - add comments
- *
- * var opts = {
-  appModule: '',
-  fixtures: [
-    {
-      req: '',
-      res: 'either a path or object',
-      statusCode: '',
-      method: 'get,post,etc..'
-    }
-  ],
-  ignore: [
-    ''
-  ]
-};
- */
-
 'use strict';
 
 var fs          = require('fs');

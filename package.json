@@ -1,11 +1,26 @@
 {
   "name": "gulp-ng-fixtures",
-  "version": "0.1.0",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Run your AngularJS app using mock data in place of your back-end",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ryandrewjohnson/gulp-ng-fixtures"
+  },
+  "keywords": [
+    "gulpplugin",
+    "angularjs",
+    "mocks",
+    "ngMock",
+    "fixtures"
+  ],
+  "bugs": {
+    "url": "https://github.com/ryandrewjohnson/gulp-ng-fixtures/issues"
+  },
+  "homepage": "https://github.com/ryandrewjohnson/gulp-ng-fixtures#options.fixtures",
   "author": "Ryan Johnson <ryan@shakainteractive.com> (http://shakainteractive.com/)",
   "license": "MIT",
   "dependencies": {
