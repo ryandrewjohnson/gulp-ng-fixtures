@@ -9,8 +9,8 @@
  * - generating angular service and injecting it
  *
  * TODO:
- * - add gulp logging and error handling
  * - update to use npm version of angular mocks...
+ * - write tests for option overrides
  * - add comments
  */
 
@@ -22,6 +22,9 @@ var gutil       = require('gulp-util');
 var PluginError = gutil.PluginError;
 var Rx          = require('rx');
 var handlebars  = require('handlebars');
+var magenta     = gutil.colors.magenta;
+var cyan        = gutil.colors.cyan;
+var red         = gutil.colors.red;
 
 var defaults,
     readFile,
@@ -29,19 +32,19 @@ var defaults,
     HTTP_METHODS;
 
 defaults = {
-  angularMocksUrl: '//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.2/angular-mocks.js',
-  method: 'get',
+  angularMocksUrl: '//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular-mocks.js',
+  method: 'GET',
   status: 200
 };
 
 PLUGIN_NAME = 'gulp-ng-fixtures';
 
 HTTP_METHODS = [
-  'get',
-  'post',
-  'put',
-  'delete',
-  'head'
+  'GET',
+  'POST',
+  'PUT',
+  'DELETE',
+  'HEAD'
 ];
 
 readFile = Rx.Observable.fromNodeCallback(fs.readFile);
@@ -84,15 +87,17 @@ function addFixtures(opts) {
     throw new PluginError(PLUGIN_NAME, 'appModule option is required');
   }
 
-  gutil.log('Add fixtures for app module', gutil.colors.magenta(opts.appModule));
+  if (!opts.fixtures || opts.fixtures.length === 0) {
+    throw new PluginError(PLUGIN_NAME, 'fixtures options is required');
+  }
 
   fixturesStream = readFixtures(opts.fixtures);
-  readTplStream  = readFile('./template.html');
+  readTplStream  = readFile(__dirname + '/template.html');
 
   return through.obj(function(file, encoding, callback) {
     var self = this;
 
-    console.log('isStream', file.isStream());
+    gutil.log(magenta(PLUGIN_NAME), 'adding ' + cyan(opts.fixtures.length) + ' fixtures to ' + cyan(file.relative));
 
     if (file.isStream()) {
       self.emit('error', new PluginError(PLUGIN_NAME,  'Streaming not supported'));
@@ -123,10 +128,10 @@ function onStreamError(err) {
 
 
 function removeFixtures(appModule) {
-  gutil.log('Remove fixtures for app module', gutil.colors.magenta(appModule));
-
   return through.obj(function(file, encoding, callback) {
     var contents = file.contents.toString();
+
+    gutil.log(magenta(PLUGIN_NAME), 'removing fixtures from ' + cyan(file.relative));
 
     contents = contents.replace(/^<!-- ng:fixtures -->(.|[\r\n])*<!-- endfixtures -->$/gmi, '');
     contents = contents.replace('data-ng-fixtures="'+ appModule +'"', 'ng-app="'+ appModule +'"');
@@ -190,7 +195,7 @@ function readFixtures(fixtures) {
 
   // for each json fixture read file data
   jsonReadFixtures = jsonFixtures
-    .flatMap(function(fixture) {
+    .concatMap(function(fixture) {
       return readFile(fixture.res);
     })
     .map(function(data, idx, obs) {
@@ -233,7 +238,7 @@ function parseHttpMethod(value) {
   if (value === undefined) { return method; }
 
   HTTP_METHODS.some(function(verb) {
-    if (verb === value.toString().toLowerCase()) {
+    if (verb === value.toString().toUpperCase()) {
       method = verb;
       return true;
     }

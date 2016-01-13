@@ -25,11 +25,11 @@ angular
     function _init() {
       {{#each fixtures}}
 
-        {{#if res}}
-          $httpBackend.when({{{parseReq req}}}, "{{method}}").respond({{status}}, {{{json res}}});
-        {{else}}
-          $httpBackend.whenGET({{{parseReq req}}}).passThrough();
-        {{/if}}
+      {{#if res}}
+      $httpBackend.when("{{method}}", {{{parseReq req}}}).respond({{status}}, {{{json res}}});
+      {{else}}
+      $httpBackend.whenGET({{{parseReq req}}}).passThrough();
+      {{/if}}
 
       {{/each}}
     }
