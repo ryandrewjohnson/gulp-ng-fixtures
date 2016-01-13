@@ -60,7 +60,16 @@ describe('gulp-ng-fixtures', function() {
     .should.throw(/appModule option is required/);
   });
 
+  it('should throw error missing fixtures option', function() {
+    (function() {
+      ngFixtures(options);
+    })
+    .should.throw(/fixtures options is required/);
+  });
+
   it('should remove ng-app attribute and replace with custom attr', function(done) {
+    options.fixtures = mockFixtures;
+
     gulp.src(paths.inputHtml)
     .pipe(ngFixtures(options))
     .pipe(assert.first(function(d) {
@@ -71,27 +80,30 @@ describe('gulp-ng-fixtures', function() {
   });
 
   it('should insert default ngMocks script tag', function(done) {
+    options.fixtures = mockFixtures;
+
     gulp.src(paths.inputHtml)
     .pipe(ngFixtures(options))
     .pipe(assert.first(function(d) {
-      d.contents.toString().should.match(/<script src="\/\/cdnjs.cloudflare.com\/ajax\/libs\/angular.js\/1.5.0-beta.2\/angular-mocks.js">/);
+      d.contents.toString().should.match(/<script src="\/\/cdnjs.cloudflare.com\/ajax\/libs\/angular.js\/1.4.8\/angular-mocks.js">/);
     }))
     .pipe(assert.end(done));
   });
 
   it('should override default ngMocks script tag', function(done) {
-    options.angularMocksUrl = '/local/angular-mocks.js';
+    options.fixtures = mockFixtures;
+    options.ngversion = '1.5.0';
 
     gulp.src(paths.inputHtml)
     .pipe(ngFixtures(options))
     .pipe(assert.first(function(d) {
-      d.contents.toString().should.match(/<script src="\/local\/angular-mocks.js">/);
+      d.contents.toString().should.match(/<script src="\/\/cdnjs.cloudflare.com\/ajax\/libs\/angular.js\/1.5.0\/angular-mocks.js">/);
     }))
     .pipe(assert.end(done));
   });
 
   it('should add fixtures js before <body> tag', function(done) {
-    options.angularMocksUrl = '/local/angular-mocks.js';
+    options.fixtures = mockFixtures;
 
     gulp.src(paths.inputHtml)
     .pipe(ngFixtures(options))
@@ -163,7 +175,7 @@ describe('gulp-ng-fixtures', function() {
 });
 
 function getFixtureRegex(fixtures) {
-  var tmpl1 = '$httpBackend.when({url}, "{method}").respond({status}, {res});';
+  var tmpl1 = '$httpBackend.when("{method}", {url}).respond({status}, {res});';
   var tmpl2 = '$httpBackend.whenGET({url}).passThrough();';
   var match = '';
 

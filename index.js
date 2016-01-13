@@ -9,9 +9,22 @@
  * - generating angular service and injecting it
  *
  * TODO:
- * - update to use npm version of angular mocks...
- * - write tests for option overrides
  * - add comments
+ *
+ * var opts = {
+  appModule: '',
+  fixtures: [
+    {
+      req: '',
+      res: 'either a path or object',
+      statusCode: '',
+      method: 'get,post,etc..'
+    }
+  ],
+  ignore: [
+    ''
+  ]
+};
  */
 
 'use strict';
@@ -28,14 +41,18 @@ var red         = gutil.colors.red;
 
 var defaults,
     readFile,
+    NG_MOCKS_URL,
     PLUGIN_NAME,
     HTTP_METHODS;
 
+
 defaults = {
-  angularMocksUrl: '//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular-mocks.js',
+  ngversion: '1.4.8',
   method: 'GET',
   status: 200
 };
+
+NG_MOCKS_URL = '//cdnjs.cloudflare.com/ajax/libs/angular.js/{{version}}/angular-mocks.js';
 
 PLUGIN_NAME = 'gulp-ng-fixtures';
 
@@ -48,23 +65,6 @@ HTTP_METHODS = [
 ];
 
 readFile = Rx.Observable.fromNodeCallback(fs.readFile);
-
-/*
-var opts = {
-  appModule: '',
-  fixtures: [
-    {
-      req: '',
-      res: 'either a path or object',
-      statusCode: '',
-      method: 'get,post,etc..'
-    }
-  ],
-  ignore: [
-    ''
-  ]
-};
-*/
 
 
 module.exports = function(opts) {
@@ -152,7 +152,7 @@ function parseIndexFile(results, opts) {
 
   hbOptions = {
     appmodule:    opts.appModule,
-    angularmocks: opts.angularMocksUrl,
+    angularmocks: NG_MOCKS_URL.replace('{{version}}', opts.ngversion),
     fixtures:     fixtures
   };
 
