@@ -1,7 +1,7 @@
 {
   "name": "gulp-ng-fixtures",
   "version": "1.0.2",
-  "description": "Run your AngularJS app using mock data in place of your back-end",
+  "description": "Run your AngularJS app using mock data in place of your back-end.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/index.js"
