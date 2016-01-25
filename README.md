@@ -29,7 +29,6 @@ npm install --save-dev gulp-ng-fixtures
 var ngFixtures = require('gulp-ng-fixtures');
 
 gulp.src('app/index.html')
-  .pipe(ngFixtures({
     appModule: 'myapp',
     fixtures: [
       {
@@ -53,7 +52,7 @@ Having to create a [fixture](#fixture-object) for each and every http request wo
 
 ###### Example targeting single http request
 
-By using regex we can target all requests with a single pattern `/*./` and then omit the `res` property to have the request [passThrough](https://docs.angularjs.org/api/ngMockE2E/service/$httpBackend).
+By using regex we can target all requests with a single pattern `/.*/` and then omit the `res` property to have the request [passThrough](https://docs.angularjs.org/api/ngMockE2E/service/$httpBackend).
 
 > Note: Order of fixtures is important. Any "catch all" fixtures should go at the end of the array.
 
@@ -66,7 +65,7 @@ ngFixtures({
       res: { name: 'Ryan Johnson', email: 'myemail@email.com' }
     },
     {
-      req: /*./
+      req: /.*/
     }
   ]
 })
@@ -144,7 +143,7 @@ An array of [fixture](#fixture-object) object's where each object represents a h
     status: 200
   },
   {
-    req: /views\/*.html/
+    req: /views\/html/
   }
 ]
 ```
@@ -218,7 +217,7 @@ If you don't want to return any data omit the `res` property from your [fixture]
 
 ```javascript
 {
-  req: /views\/*.html/
+  req: /views\/html/
 }
 ```
 
